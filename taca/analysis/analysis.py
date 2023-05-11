@@ -10,6 +10,7 @@ from taca.illumina.HiSeq_Runs import HiSeq_Run
 from taca.illumina.MiSeq_Runs import MiSeq_Run
 from taca.illumina.NextSeq_Runs import NextSeq_Run
 from taca.illumina.NovaSeq_Runs import NovaSeq_Run
+from taca.illumina.NovaSeqXPlus_Runs import NovaSeqXPlus_Run
 from taca.utils.config import CONFIG
 from taca.utils.transfer import RsyncAgent
 from taca.utils import statusdb
@@ -50,6 +51,7 @@ def get_runObj(run):
         runtype = rp.data['RunParameters'].get('Application', rp.data['RunParameters'].get('ApplicationName', ''))
         if 'Setup' in rp.data['RunParameters']:
             # This is the HiSeq2500, MiSeq, and HiSeqX case
+            # NovaSeq and NovaseqXPlus are missing 'Setup' field
             try:
                 # Works for recent control software
                 runtype = rp.data['RunParameters']['Setup']['Flowcell']
@@ -61,6 +63,10 @@ def get_runObj(run):
                 # so that it doesn't raise an exception in the next lines
                 # (in case ApplicationName is not found, get returns None)
                 runtype = rp.data['RunParameters']['Setup'].get('ApplicationName', '')
+        elif 'InstrumentType' in rp.data['RunParameters']:
+            # NovaseqXPlus case
+            runtype = rp.data['RunParameters']['InstrumentType']
+            
 
         if 'HiSeq X' in runtype:
             return HiSeqX_Run(run, CONFIG['analysis']['HiSeqX'])
@@ -70,6 +76,8 @@ def get_runObj(run):
             return MiSeq_Run(run, CONFIG['analysis']['MiSeq'])
         elif 'NextSeq' in runtype:
             return NextSeq_Run(run, CONFIG['analysis']['NextSeq'])
+        elif 'NovaSeqXPlus' in runtype:
+            return NovaSeqXPlus_Run(run, CONFIG['analysis']['NovaSeqXPlus'])
         elif 'NovaSeq' in runtype:
             return NovaSeq_Run(run, CONFIG['analysis']['NovaSeq'])
         else:

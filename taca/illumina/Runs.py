@@ -40,6 +40,7 @@ class Run(object):
 
         self.run_dir = os.path.abspath(run_dir)
         self.id = os.path.basename(os.path.normpath(run_dir))
+        import pdb; pdb.set_trace()
         pattern = r'(\d{6})_([ST-]*\w+\d+)_\d+_([AB]?)([A-Z0-9\-]+)'
         m = re.match(pattern, self.id)
         self.date = m.group(1)
