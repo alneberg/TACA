@@ -349,7 +349,18 @@ def run_preprocessing(run):
                                                     'html', run.flowcell_id, 'all', 'all', 'all', 'laneBarcode.html')
                     copyfile(demulti_stat_src, os.path.join(mfs_dest, 'laneBarcode.html'))
                 except:
-                    logger.warn('Could not copy demultiplex stat file for run {}'.format(run.id))
+                    logger.warn('Could not copy demultiplex stat file for run {} to mfs'.format(run.id))
+            if 'ngi_nas_ns_path' in CONFIG['analysis']:
+                try:
+                    ngi_nas_ns_dest = os.path.join(CONFIG['analysis']['ngi_nas_ns_path'][run.sequencer_type.lower()],run.id)
+                    logger.info('Copying demultiplex stats for run {} to {}'.format(run.id, ngi_nas_ns_dest))
+                    if not os.path.exists(ngi_nas_ns_dest):
+                        os.mkdir(ngi_nas_ns_dest)
+                    demulti_stat_src_ns = os.path.join(run.run_dir, run.demux_dir, 'Reports',
+                                                    'html', run.flowcell_id, 'all', 'all', 'all', 'laneBarcode.html')
+                    copyfile(demulti_stat_src_ns, os.path.join(ngi_nas_ns_dest, 'laneBarcode.html'))
+                except:
+                    logger.warn('Could not copy demultiplex stat file for run {} to ngi-nas-ns'.format(run.id))
 
             # Transfer to analysis server if flag is True
             if run.transfer_to_analysis_server:
